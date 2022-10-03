@@ -258,29 +258,26 @@ void main(void)
 {
     //float V = 15.6, uin = 18.3;
     float *Eta1_U;
-    float *Eta2_U; 
-    float *Eta3_U;
     float Eta_U[100][3];
     float V[3] = {15.3,16.2,15.8};
     float I[3] = {3.1,2.8,2.8};
     float uin[3] = {18.5,25.3,26.2};
     float w[3] = {(float)50/150,(float)50/150,(float)50/150};
-    uint8_t size = 0, i=0;
+    uint8_t size = 0, i=0, j=0;
     
-    Eta1_U = Eta_Ux(V[0],uin[0]);
-    Eta2_U = Eta_Ux(V[1],uin[1]);
-    Eta3_U = Eta_Ux(V[2],uin[2]);
-    
-    printf("\n%0.4f,%0.4f,%0.4f,%0.4f",Eta1_U[0],Eta1_U[1],Eta1_U[2],Eta1_U[3]);
-    printf("\n%0.4f,%0.4f,%0.4f,%0.4f",Eta2_U[0],Eta2_U[1],Eta2_U[2],Eta2_U[3]);
-    printf("\n%0.4f,%0.4f,%0.4f,%0.4f",Eta3_U[0],Eta3_U[1],Eta3_U[2],Eta3_U[3]);
-
-    for (i=0;i<100;i++)
+   
+    for (i=0;i<3;i++)
     {
-        Eta_U[i][0] = *Eta1_U++;
-        Eta_U[i][1] = *Eta2_U++;
-        Eta_U[i][2] = *Eta3_U++;   
+        Eta1_U = Eta_Ux(V[i],uin[i]);
+        for(j = 0;j<100;j++)
+        Eta_U[j][i] = *Eta1_U++; 
     }
+    
+    /*printf("\n%0.4f,%0.4f,%0.4f,%0.4f",Eta1_U[0],Eta1_U[1],Eta1_U[2],Eta1_U[3]);
+    printf("\n%0.4f,%0.4f,%0.4f,%0.4f",Eta2_U[0],Eta2_U[1],Eta2_U[2],Eta2_U[3]);
+    printf("\n%0.4f,%0.4f,%0.4f,%0.4f",Eta3_U[0],Eta3_U[1],Eta3_U[2],Eta3_U[3]);*/
+
+    
     uint8_t PosF = MetodoDirecto(w,V,I,Eta_U,size);
     uint8_t PosF2 = MetodoDirectoReducido(w,V,I,Eta_U,size);
     printf("%d \n %d", PosF,PosF2);
