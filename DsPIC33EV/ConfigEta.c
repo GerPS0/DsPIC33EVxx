@@ -71,7 +71,7 @@ uint8_t MetodoDirecto(float *w, float *V, float *I, float *duty, float *Eta[])
 
     }
 
-   return PosF+aux;
+   return ((86-aux)+PosF);
 }
 
 
@@ -303,7 +303,7 @@ void main(void)
     float Eta_U[100][3];
     float V[3] = {15.3,16.2,16.1};
     float I[3] = {3.1,2.8,2.8};
-    float uin[3] = {28.5,25.3,31.2};
+    float uin[3] = {28.5,25.3,35.2};
     float w[3] = {(float)50/150,(float)50/150,(float)50/150};
     uint8_t i=0, j=0;
     
