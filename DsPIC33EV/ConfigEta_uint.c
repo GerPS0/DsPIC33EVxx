@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "MetodoDirecto.c"
 
 uint8_t *limitPos(float valor, int8_t *arr_int, uint8_t size);
 uint8_t Duty_Lv(uint8_t u_dim);

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "MetodoDirecto.c"
 
 
 uint8_t *limitPos(float valor, int8_t *arr_int, uint8_t size);
@@ -13,7 +14,12 @@ float *Eta_lv_up(uint8_t *Vin, uint8_t *PosC, uint8_t u_lv, uint8_t size, float 
 float *Eta_Lv_duty(uint8_t *uin, float *Lv_low, float *Lv_up, float u0, uint8_t size_low,uint8_t size_up);
 float *Eta_Ux(float Vin, float uin);
 
-float Eta1[5][5] = {{0.9124, 0.9360, 0.9050, 0.9206, 0.9184},
+float Eta1[10][5] = {{0.9124, 0.9360, 0.9050, 0.9206, 0.9184},
+                    {0.9060, 0.9438, 0.9142, 0.9301, 0.9213},
+                    {0.9163, 0.9321, 0.9180, 0.9350, 0.9309},
+                    {0.9316, 0.9377, 0.9240, 0.9359, 0.9303},
+                    {0.9223, 0.9450, 0.9259, 0.9364, 0.9352},
+                    {0.9124, 0.9360, 0.9050, 0.9206, 0.9184},
                     {0.9060, 0.9438, 0.9142, 0.9301, 0.9213},
                     {0.9163, 0.9321, 0.9180, 0.9350, 0.9309},
                     {0.9316, 0.9377, 0.9240, 0.9359, 0.9303},
@@ -222,7 +228,7 @@ float *Eta_Ux(float Vin, float uin)
         uint8_t arrPosV[2] = {temp1[0], temp1[1]};
         uint8_t VinValues[2] = {Vs[arrPosV[0]],Vs[arrPosV[1]]};
 
-        printf("%d,%d\n",*(temp1+0),*(temp1+1));
+        //printf("%d,%d\n",*(temp1+0),*(temp1+1));
         //Positions of u
         size = sizeof(u)/sizeof(u[0]);
         temp1 = limitPos(uin,u, size);
@@ -230,7 +236,7 @@ float *Eta_Ux(float Vin, float uin)
         uint8_t arrPosU[2] = {temp1[0], temp1[1]};
         uint8_t uinValues[2] = {u[arrPosU[0]],u[arrPosU[1]]};
 
-        printf("%d,%d\n",*(temp1+0),*(temp1+1));
+        //printf("%d,%d\n",*(temp1+0),*(temp1+1));
 
         Eta_V1 = Eta_lv_low(VinValues,arrPosV,arrPosU[0],Duty_Lv(arrPosU[0]),Vin);
         Eta_V2 = Eta_lv_up(VinValues,arrPosV,arrPosU[1],Duty_Lv(arrPosU[1]),Vin);
@@ -250,11 +256,34 @@ float *Eta_Ux(float Vin, float uin)
 }
 void main(void)
 {
-    float V = 15.6, uin = 18.3;
-    float *Eta_U;
+    //float V = 15.6, uin = 18.3;
+    float *Eta1_U;
+    float *Eta2_U; 
+    float *Eta3_U;
+    float Eta_U[100][3];
+    float V[3] = {15.3,16.2,15.8};
+    float I[3] = {3.1,2.8,2.8};
+    float uin[3] = {18.5,25.3,26.2};
+    float w[3] = {(float)50/150,(float)50/150,(float)50/150};
+    uint8_t size = 0, i=0;
     
-    Eta_U = Eta_Ux(V,uin);
-    printf("\n%0.4f,%0.4f,%0.4f",*(Eta_U+0),*(Eta_U+1),*(Eta_U+2));
+    Eta1_U = Eta_Ux(V[0],uin[0]);
+    Eta2_U = Eta_Ux(V[1],uin[1]);
+    Eta3_U = Eta_Ux(V[2],uin[2]);
+    
+    printf("\n%0.4f,%0.4f,%0.4f,%0.4f",Eta1_U[0],Eta1_U[1],Eta1_U[2],Eta1_U[3]);
+    printf("\n%0.4f,%0.4f,%0.4f,%0.4f",Eta2_U[0],Eta2_U[1],Eta2_U[2],Eta2_U[3]);
+    printf("\n%0.4f,%0.4f,%0.4f,%0.4f",Eta3_U[0],Eta3_U[1],Eta3_U[2],Eta3_U[3]);
+
+    for (i=0;i<100;i++)
+    {
+        Eta_U[i][0] = *Eta1_U++;
+        Eta_U[i][1] = *Eta2_U++;
+        Eta_U[i][2] = *Eta3_U++;   
+    }
+    uint8_t PosF = MetodoDirecto(w,V,I,Eta_U,size);
+    uint8_t PosF2 = MetodoDirectoReducido(w,V,I,Eta_U,size);
+    printf("%d \n %d", PosF,PosF2);
 
     
 }
