@@ -16,7 +16,7 @@ float *Eta_Lv_duty(uint8_t *uin, float *Lv_low, float *Lv_up, float u0, uint8_t 
 float *Eta_Ux(float Vin, float uin);
 
 float FuncionObjetivo(float *w, float *V, float *I, float *Eta, uint8_t size);
-uint8_t MetodoDirecto(float *w, float *V, float *I, float *Eta[]);
+uint8_t MetodoDirecto(float *w, float *V, float *I, float *duty, float *Eta[]);
 
 
 float FuncionObjetivo(float *w, float *V, float *I, float *Eta, uint8_t size)
@@ -29,6 +29,51 @@ float FuncionObjetivo(float *w, float *V, float *I, float *Eta, uint8_t size)
     return F;
     
 }
+uint8_t MetodoDirecto(float *w, float *V, float *I, float *duty, float *Eta[])
+{
+    uint8_t i = 0, dim[3] = {0,0,0}, aux = 100;
+    uint8_t PosF = 0;
+    uint8_t u[3] ={*(duty+0),*(duty+1),*(duty+2)};
+    float Eaux[3] = {0.0,0.0,0.0};
+    float F = 0.0;
+    float F0 = 0.0;
+    for (i = 0; i<3;i++)
+    {
+        if (u[i] >= 10 && u[i] < 20)
+            dim[i] = Duty_Lv(1);
+        else if (u[i] >= 20 && u[i] < 30)
+            dim[i] = Duty_Lv(2);
+        else if (u[i] >= 30 && u[i] < 40)
+            dim[i] = Duty_Lv(3);
+        else if (u[i] >= 40 && u[i] <= 50)
+            dim[i] = Duty_Lv(4);
+        if (dim[i] < aux){aux = dim[i];}
+   }
+   uint8_t index[3] = {dim[0]-aux,dim[1]-aux,dim[2]-aux};
+   
+    Eaux[0] = Eta[index[0]][0];
+    Eaux[1] = Eta[index[1]][1];
+    Eaux[2] = Eta[index[2]][2];
+
+    F0 = FuncionObjetivo(w,V,I,Eaux,3);
+    printf("%0.4f",F0);
+    for (i = 1;i<aux;i++)
+    {
+        Eaux[0] = Eta[index[0]+i][0];
+        Eaux[1] = Eta[index[1]+i][1];
+        Eaux[2] = Eta[index[2]+i][2];
+        F = FuncionObjetivo(w,V,I,Eaux,3);
+        printf("\n%0.4f",F);
+            if (F>F0){
+                F0 = F;
+                PosF = i;
+            }
+
+    }
+
+   return PosF+aux;
+}
+
 
 uint8_t *limitPos(float valor, int8_t *arr_in, uint8_t size)
 {
@@ -238,9 +283,9 @@ float *Eta_Ux(float Vin, float uin)
         Eta_V2 = Eta_lv_up(VinValues,arrPosV,arrPosU[1],Duty_Lv(arrPosU[1]),Vin);
         aux = Eta_Lv_duty(uinValues,Eta_V1,Eta_V2,uin,Duty_Lv(arrPosU[0]),Duty_Lv(arrPosU[1]));
         size = Duty_Lv(arrPosU[1]);
-        printf("%0.4f,%0.4f,%0.4f,%0.4f,%0.4f",*(Eta_V1+0),*(Eta_V1+1),*(Eta_V1+2),*(Eta_V1+3),*(Eta_V1+4));
+        /*printf("%0.4f,%0.4f,%0.4f,%0.4f,%0.4f",*(Eta_V1+0),*(Eta_V1+1),*(Eta_V1+2),*(Eta_V1+3),*(Eta_V1+4));
         printf("\n%0.4f,%0.4f,%0.4f,%0.4f,%0.4f",*(Eta_V2+0),*(Eta_V2+1),*(Eta_V2+2),*(Eta_V2+3),*(Eta_V2+4));
-        printf("\n%0.4f,%0.4f,%0.4f,%0.4f,%0.4f",*(aux+0),*(aux+1),*(aux+2),*(aux+3),*(aux+4));
+        printf("\n%0.4f,%0.4f,%0.4f,%0.4f,%0.4f",*(aux+0),*(aux+1),*(aux+2),*(aux+3),*(aux+4));*/
         
         for (i =0;i<size;i++)
             Eta_U[i] = *aux++;
@@ -256,11 +301,11 @@ void main(void)
     float *Eta1_U;
     float *aux[100];
     float Eta_U[100][3];
-    float V[3] = {15.3,16.2,17.1};
+    float V[3] = {15.3,16.2,16.1};
     float I[3] = {3.1,2.8,2.8};
-    float uin[3] = {18.5,25.3,31.2};
+    float uin[3] = {28.5,25.3,31.2};
     float w[3] = {(float)50/150,(float)50/150,(float)50/150};
-    uint8_t size = 5, i=0, j=0;
+    uint8_t i=0, j=0;
     
    
     for (i=0;i<3;i++)
@@ -280,8 +325,8 @@ void main(void)
     printf("\n%0.4f,%0.4f,%0.4f,%0.4f",Eta3_U[0],Eta3_U[1],Eta3_U[2],Eta3_U[3]);*/
 
     
-    //uint8_t PosF = MetodoDirecto(w,V,I,aux);
-    //printf("\n%d", PosF);
+    uint8_t PosF = MetodoDirecto(w,V,I,uin,aux);
+    printf("\n%d", PosF);
 
     
 }
