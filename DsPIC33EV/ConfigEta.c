@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "MetodoDirecto.c"
+#include "Eta_val.c"
+
 
 
 uint8_t *limitPos(float valor, int8_t *arr_int, uint8_t size);
@@ -14,25 +15,20 @@ float *Eta_lv_up(uint8_t *Vin, uint8_t *PosC, uint8_t u_lv, uint8_t size, float 
 float *Eta_Lv_duty(uint8_t *uin, float *Lv_low, float *Lv_up, float u0, uint8_t size_low,uint8_t size_up);
 float *Eta_Ux(float Vin, float uin);
 
-float Eta1[10][5] = {{0.9124, 0.9360, 0.9050, 0.9206, 0.9184},
-                    {0.9060, 0.9438, 0.9142, 0.9301, 0.9213},
-                    {0.9163, 0.9321, 0.9180, 0.9350, 0.9309},
-                    {0.9316, 0.9377, 0.9240, 0.9359, 0.9303},
-                    {0.9223, 0.9450, 0.9259, 0.9364, 0.9352},
-                    {0.9124, 0.9360, 0.9050, 0.9206, 0.9184},
-                    {0.9060, 0.9438, 0.9142, 0.9301, 0.9213},
-                    {0.9163, 0.9321, 0.9180, 0.9350, 0.9309},
-                    {0.9316, 0.9377, 0.9240, 0.9359, 0.9303},
-                    {0.9223, 0.9450, 0.9259, 0.9364, 0.9352}};
+float FuncionObjetivo(float *w, float *V, float *I, float *Eta, uint8_t size);
+uint8_t MetodoDirecto(float *w, float *V, float *I, float *Eta[]);
 
-float Eta2[4][5] = {{0.9124, 0.9360, 0.9050, 0.9206, 0.9184},
-                    {0.9060, 0.9438, 0.9142, 0.9301, 0.9213},
-                    {0.9163, 0.9321, 0.9180, 0.9350, 0.9309},
-                    {0.9316, 0.9377, 0.9240, 0.9359, 0.9303}};
 
-float Eta3[3][5] = {{0.9124, 0.9360, 0.9050, 0.9206, 0.9184},
-                    {0.9060, 0.9438, 0.9142, 0.9301, 0.9213},
-                    {0.9163, 0.9321, 0.9180, 0.9350, 0.9309}};
+float FuncionObjetivo(float *w, float *V, float *I, float *Eta, uint8_t size)
+{
+    int8_t i =0; 
+    float F = 0.0;
+    for (i=0;i<size;i++)
+        F = F + (float)pow(((*V++)*(*I++)*(*Eta++)),2)*(*w++);
+    //printf("%0.4f\n", F); 
+    return F;
+    
+}
 
 uint8_t *limitPos(float valor, int8_t *arr_in, uint8_t size)
 {
@@ -56,8 +52,8 @@ uint8_t Duty_Lv(uint8_t u_dim)
     if (u_dim == 0){size = sizeof(Eta1)/sizeof(Eta1[0]);}
     else if (u_dim == 1){size = sizeof(Eta2)/sizeof(Eta2[0]);}
     else if (u_dim == 2){size = sizeof(Eta3)/sizeof(Eta3[0]);}
-    else if (u_dim == 3){size = sizeof(Eta1)/sizeof(Eta1[0]);}
-    else if (u_dim == 4){size = sizeof(Eta1)/sizeof(Eta1[0]);}
+    else if (u_dim == 3){size = sizeof(Eta4)/sizeof(Eta4[0]);}
+    else if (u_dim == 4){size = sizeof(Eta5)/sizeof(Eta5[0]);}
 
     return size;
 }
@@ -258,29 +254,34 @@ void main(void)
 {
     //float V = 15.6, uin = 18.3;
     float *Eta1_U;
+    float *aux[100];
     float Eta_U[100][3];
-    float V[3] = {15.3,16.2,15.8};
+    float V[3] = {15.3,16.2,17.1};
     float I[3] = {3.1,2.8,2.8};
-    float uin[3] = {18.5,25.3,26.2};
+    float uin[3] = {18.5,25.3,31.2};
     float w[3] = {(float)50/150,(float)50/150,(float)50/150};
-    uint8_t size = 0, i=0, j=0;
+    uint8_t size = 5, i=0, j=0;
     
    
     for (i=0;i<3;i++)
     {
         Eta1_U = Eta_Ux(V[i],uin[i]);
         for(j = 0;j<100;j++)
-        Eta_U[j][i] = *Eta1_U++; 
+        Eta_U[j][i] = *Eta1_U++;
     }
+    for(i=0;i<100;i++)
+        aux[i] = &Eta_U[i][0];
     
+    
+    
+           
     /*printf("\n%0.4f,%0.4f,%0.4f,%0.4f",Eta1_U[0],Eta1_U[1],Eta1_U[2],Eta1_U[3]);
     printf("\n%0.4f,%0.4f,%0.4f,%0.4f",Eta2_U[0],Eta2_U[1],Eta2_U[2],Eta2_U[3]);
     printf("\n%0.4f,%0.4f,%0.4f,%0.4f",Eta3_U[0],Eta3_U[1],Eta3_U[2],Eta3_U[3]);*/
 
     
-    uint8_t PosF = MetodoDirecto(w,V,I,Eta_U,size);
-    uint8_t PosF2 = MetodoDirectoReducido(w,V,I,Eta_U,size);
-    printf("%d \n %d", PosF,PosF2);
+    //uint8_t PosF = MetodoDirecto(w,V,I,aux);
+    //printf("\n%d", PosF);
 
     
 }

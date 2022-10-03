@@ -91,7 +91,7 @@ uint8_t MetodoDirectoReducido(float *w, float *V, float *I, float *Eta[], uint8_
 }
 
 
-/*void main(void)
+void main(void)
 {
     float V[3] = {15.3,16.2,15.8};
     float I[3] = {3.1,2.8,2.8};
@@ -121,4 +121,4 @@ uint8_t MetodoDirectoReducido(float *w, float *V, float *I, float *Eta[], uint8_
     PosF2 = MetodoDirectoReducido(w,V,I,aux,size);
     printf("%d \n %d", PosF,PosF2);
 
-}*/
+}
