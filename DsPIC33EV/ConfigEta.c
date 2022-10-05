@@ -19,6 +19,8 @@ float FuncionObjetivo(float *w, float *V, float *I, float *Eta, uint8_t size);
 uint8_t MetodoDirecto(float *w, float *V, float *I, float *duty, float *Eta[]);
 
 
+float w[3] = {(float)50/150,(float)50/150,(float)50/150};
+
 float FuncionObjetivo(float *w, float *V, float *I, float *Eta, uint8_t size)
 {
     int8_t i =0; 
@@ -47,6 +49,8 @@ uint8_t MetodoDirecto(float *w, float *V, float *I, float *duty, float *Eta[])
             dim[i] = Duty_Lv(3);
         else if (u[i] >= 40 && u[i] <= 50)
             dim[i] = Duty_Lv(4);
+        else
+            dim[i] = Duty_Lv(0);
         if (dim[i] < aux){aux = dim[i];}
    }
    uint8_t index[3] = {dim[0]-aux,dim[1]-aux,dim[2]-aux};
@@ -80,7 +84,7 @@ uint8_t *limitPos(float valor, int8_t *arr_in, uint8_t size)
 	/*  This function returns in a one-dimensional array the position values found in: "arr in" array_in"
 		array_in represent the vertices of a certain input
 	*/
-	static uint8_t arr[2];
+	static uint8_t arr[2]={0,0};
 	uint8_t i = 0;
 	
 	while(valor >= *(arr_in + i) && i < size){
@@ -109,7 +113,7 @@ float Lineal_Interpolation(float *arrY, int8_t *arrX, float x0)
 		The Ys represent the maximum value found in the interpolate function 
 	*/
 	float Ys = 0;
-	if (x0 == *(arrX+0))    //when x0 is equal to the first value of the arrX (Vertice) is not necessary the interpolation)
+	if (x0 == *(arrX+0) || *(arrX+0) == *(arrX+1))    //when x0 is equal to the first value of the arrX (Vertice) is not necessary the interpolation)
 		Ys = *(arrY+0);
 	else{
 		Ys = ((*(arrY + 1)-*(arrY + 0))/(*(arrX + 1)-*(arrX + 0))) * (x0 - *(arrX + 0)) + *(arrY + 0); 
@@ -160,8 +164,8 @@ float *Eta_lv_low(uint8_t *Vin, uint8_t *PosC, uint8_t u_lv, uint8_t size, float
     {
         for(i=0;i<size;i++)
         {
-            aux[0] = Eta1[i][*(PosC+0)];
-            aux[1] = Eta1[i][*(PosC+1)];
+            aux[0] = Eta4[i][*(PosC+0)];
+            aux[1] = Eta4[i][*(PosC+1)];
             Eta_to_V[i] = Lineal_Interpolation(aux,Vin,V0);
         }  
     }
@@ -169,8 +173,8 @@ float *Eta_lv_low(uint8_t *Vin, uint8_t *PosC, uint8_t u_lv, uint8_t size, float
     {
         for(i=0;i<size;i++)
         {
-            aux[0] = Eta1[i][*(PosC+0)];
-            aux[1] = Eta1[i][*(PosC+1)];
+            aux[0] = Eta5[i][*(PosC+0)];
+            aux[1] = Eta5[i][*(PosC+1)];
             Eta_to_V[i] = Lineal_Interpolation(aux,Vin,V0);
         }  
     }
@@ -222,8 +226,8 @@ float *Eta_lv_up(uint8_t *Vin, uint8_t *PosC, uint8_t u_lv, uint8_t size, float 
     {
         for(i=0;i<size;i++)
         {
-            aux[0] = Eta1[i][*(PosC+0)];
-            aux[1] = Eta1[i][*(PosC+1)];
+            aux[0] = Eta4[i][*(PosC+0)];
+            aux[1] = Eta4[i][*(PosC+1)];
             Eta_to_V[i] = Lineal_Interpolation(aux,Vin,V0);
         }  
     }
@@ -231,8 +235,8 @@ float *Eta_lv_up(uint8_t *Vin, uint8_t *PosC, uint8_t u_lv, uint8_t size, float 
     {
         for(i=0;i<size;i++)
         {
-            aux[0] = Eta1[i][*(PosC+0)];
-            aux[1] = Eta1[i][*(PosC+1)];
+            aux[0] = Eta5[i][*(PosC+0)];
+            aux[1] = Eta5[i][*(PosC+1)];
             Eta_to_V[i] = Lineal_Interpolation(aux,Vin,V0);
         }  
     }
@@ -303,8 +307,8 @@ void main(void)
     float Eta_U[100][3];
     float V[3] = {15.3,16.2,16.1};
     float I[3] = {3.1,2.8,2.8};
-    float uin[3] = {28.5,25.3,35.2};
-    float w[3] = {(float)50/150,(float)50/150,(float)50/150};
+    float uin[3] = {8.5,25.3,35.2};
+    
     uint8_t i=0, j=0;
     
    
