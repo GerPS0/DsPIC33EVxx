@@ -9,6 +9,7 @@
 uint8_t *limitPos(float valor, int8_t *arr_int, uint8_t size);
 uint8_t Duty_Lv(uint8_t u_dim);
 
+
 float Lineal_Interpolation(float *arrY, int8_t *arrX, float x0);
 float *Eta_lv_low(uint8_t *Vin, uint8_t *PosC, uint8_t u_lv, uint8_t size, float V0);
 float *Eta_lv_up(uint8_t *Vin, uint8_t *PosC, uint8_t u_lv, uint8_t size, float V0);
@@ -307,7 +308,7 @@ void main(void)
     float Eta_U[100][3];
     float V[3] = {15.3,16.2,16.1};
     float I[3] = {3.1,2.8,2.8};
-    float uin[3] = {8.5,25.3,35.2};
+    float uin[3] = {28.5,25.3,35.2};
     
     uint8_t i=0, j=0;
     
