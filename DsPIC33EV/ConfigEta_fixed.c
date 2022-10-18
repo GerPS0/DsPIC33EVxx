@@ -17,7 +17,7 @@ float *Eta_Ux(float Vin, float uin);
 
 int8_t Vs[11] = {15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25}; 	//Vertices of Voltage
 int8_t u[5] = {10, 20, 30, 40, 50};
-float w[3] = {(float)50/150,(float)50/150,(float)50/150};
+float w[3] = {(float)100/300,(float)100/300,(float)100/300};
 
 float FuncionObjetivo(float *w, float *V, float *I, float *Eta, uint8_t size)
 {
@@ -103,7 +103,7 @@ float *Eta_lv_low(uint8_t *Vin, uint8_t *PosC, uint8_t u_lv, uint8_t size, float
     */
     uint8_t i =0;
     float aux[2] = {0.0};
-    static float Eta_to_V[46]={0.0};
+    static float Eta_to_VL[46]={0.0};
 
     if (u_lv == 0)
     {
@@ -111,7 +111,7 @@ float *Eta_lv_low(uint8_t *Vin, uint8_t *PosC, uint8_t u_lv, uint8_t size, float
         {
             aux[0] = Eta1[i][*(PosC+0)];
             aux[1] = Eta1[i][*(PosC+1)];
-            Eta_to_V[i] = Lineal_Interpolation(aux,Vin,V0);
+            Eta_to_VL[i] = Lineal_Interpolation(aux,Vin,V0);
         }        
     }
     if (u_lv == 1)
@@ -120,7 +120,7 @@ float *Eta_lv_low(uint8_t *Vin, uint8_t *PosC, uint8_t u_lv, uint8_t size, float
         {
             aux[0] = Eta2[i][*(PosC+0)];
             aux[1] = Eta2[i][*(PosC+1)];
-            Eta_to_V[i] = Lineal_Interpolation(aux,Vin,V0);
+            Eta_to_VL[i] = Lineal_Interpolation(aux,Vin,V0);
         }  
     }
     if (u_lv == 2)
@@ -129,7 +129,7 @@ float *Eta_lv_low(uint8_t *Vin, uint8_t *PosC, uint8_t u_lv, uint8_t size, float
         {
             aux[0] = Eta3[i][*(PosC+0)];
             aux[1] = Eta3[i][*(PosC+1)];
-            Eta_to_V[i] = Lineal_Interpolation(aux,Vin,V0);
+            Eta_to_VL[i] = Lineal_Interpolation(aux,Vin,V0);
         }  
     }
     if (u_lv == 3)
@@ -138,7 +138,7 @@ float *Eta_lv_low(uint8_t *Vin, uint8_t *PosC, uint8_t u_lv, uint8_t size, float
         {
             aux[0] = Eta4[i][*(PosC+0)];
             aux[1] = Eta4[i][*(PosC+1)];
-            Eta_to_V[i] = Lineal_Interpolation(aux,Vin,V0);
+            Eta_to_VL[i] = Lineal_Interpolation(aux,Vin,V0);
         }  
     }
     if (u_lv == 4)
@@ -147,10 +147,10 @@ float *Eta_lv_low(uint8_t *Vin, uint8_t *PosC, uint8_t u_lv, uint8_t size, float
         {
             aux[0] = Eta5[i][*(PosC+0)];
             aux[1] = Eta5[i][*(PosC+1)];
-            Eta_to_V[i] = Lineal_Interpolation(aux,Vin,V0);
+            Eta_to_VL[i] = Lineal_Interpolation(aux,Vin,V0);
         }  
     }
-    return Eta_to_V;
+    return Eta_to_VL;
 }
 
 float *Eta_lv_up(uint8_t *Vin, uint8_t *PosC, uint8_t u_lv, uint8_t size, float V0)
@@ -276,9 +276,9 @@ void main(void){
     float *Eta1_U;
     float *aux[46];
     float Eta_U[46][3];
-    float V[3] = {15.3,16.2,16.1};
-    float I[3] = {3.1,2.8,2.8};
-    float uin[3] = {28.5,25.3,35.2};
+    float V[3] = {18.49,15.391,15.391};
+    float I[3] = {4.038,4.038,4.038};
+    float uin[3] = {34.44,30.15,30.15};
     
     uint8_t i=0, j=0;
     
@@ -301,5 +301,6 @@ void main(void){
 
     
     uint8_t PosF = MetodoDirecto(w,V,I,aux,Duty_Lv());
-    printf("\n%d", PosF);
+    uint32_t Fs = 55000+((PosF-1)*1000);
+    printf("\n%d, %d", PosF,Fs);
 }
